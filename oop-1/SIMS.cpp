@@ -10,6 +10,7 @@
 using namespace std;
 
 SIMS::SIMS(string filePath) {
+	this->filePath = filePath;
 	// file processing
 	ifstream fin(filePath);
 
@@ -101,7 +102,7 @@ void SIMS::InsertStudent() {
 	else {
 		studentList.push_back(Student(name, sID, bYear, dept, tel));
 		cout << "adding new student..." << endl;
-		FileWrite();
+		FileWrite(filePath);
 	}
 
 	Sleep(700);
@@ -281,11 +282,11 @@ void SIMS::SortByName() {
 	vector<Student> sortedList;
 
 	for (int i = 0; i < studentList.size(); i++)
-		tempList.push_back(pair <string, string>(studentList[i].GetSID(), studentList[i].GetName()));
+		tempList.push_back(pair <string, string>(studentList[i].GetName(), studentList[i].GetSID()));
 	sort(tempList.begin(), tempList.end());
 	for (int i = 0; i < tempList.size(); i++) {
 		for (int j = 0; j < studentList.size(); j++) {
-			if (tempList[i].first == studentList[j].GetSID()) {
+			if (tempList[i].second == studentList[j].GetSID()) {
 				sortedList.push_back(studentList[j]);
 			}
 		}
@@ -293,7 +294,7 @@ void SIMS::SortByName() {
 
 	studentList = sortedList;
 	cout << endl << "Press any key for next step ";
-	FileWrite();
+	FileWrite(filePath);
 	_getch();
 	system("cls");
 	ShowMainMenu();
@@ -315,7 +316,7 @@ void SIMS::SortBySID() {
 
 	studentList = sortedList;
 	cout << endl << "Press any key for next step ";
-	FileWrite();
+	FileWrite(filePath);
 	_getch();
 	system("cls");
 	ShowMainMenu();
@@ -325,11 +326,11 @@ void SIMS::SortByAdYear() {
 	vector<Student> sortedList;
 
 	for (int i = 0; i < studentList.size(); i++)
-		tempList.push_back(pair <string, string>(studentList[i].GetSID(), studentList[i].GetBYear()));
+		tempList.push_back(pair <string, string>(studentList[i].GetBYear(), studentList[i].GetSID()));
 	sort(tempList.begin(), tempList.end());
 	for (int i = 0; i < tempList.size(); i++) {
 		for (int j = 0; j < studentList.size(); j++) {
-			if (tempList[i].first == studentList[j].GetBYear()) {
+			if (tempList[i].second == studentList[j].GetBYear()) {
 				sortedList.push_back(studentList[j]);
 			}
 		}
@@ -337,7 +338,7 @@ void SIMS::SortByAdYear() {
 
 	studentList = sortedList;
 	cout << endl << "Press any key for next step ";
-	FileWrite();
+	FileWrite(filePath);
 	_getch();
 	system("cls");
 	ShowMainMenu();
@@ -347,11 +348,11 @@ void SIMS::SortByDept() {
 	vector<Student> sortedList;
 
 	for (int i = 0; i < studentList.size(); i++)
-		tempList.push_back(pair <string, string>(studentList[i].GetSID(), studentList[i].GetDept()));
+		tempList.push_back(pair <string, string>(studentList[i].GetDept(), studentList[i].GetSID()));
 	sort(tempList.begin(), tempList.end());
 	for (int i = 0; i < tempList.size(); i++) {
 		for (int j = 0; j < studentList.size(); j++) {
-			if (tempList[i].first == studentList[j].GetDept()) {
+			if (tempList[i].second == studentList[j].GetDept()) {
 				sortedList.push_back(studentList[j]);
 			}
 		}
@@ -359,7 +360,7 @@ void SIMS::SortByDept() {
 
 	studentList = sortedList;
 	cout << endl << "Press any key for next step ";
-	FileWrite();
+	FileWrite(filePath);
 	_getch();
 	system("cls");
 	ShowMainMenu();
@@ -383,7 +384,7 @@ vector<string> SIMS::split(string str, char Delimiter) {
 	return result;
 }
 
-void SIMS::FileWrite() {
+void SIMS::FileWrite(string filePath) {
 	ofstream fout(filePath);
 	for (int i = 0; i < studentList.size(); i++) {
 		fout << studentList[i].GetName() << ',';

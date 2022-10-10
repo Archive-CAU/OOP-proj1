@@ -37,6 +37,6 @@ public:
 
 	void Exit();
 
-	void FileWrite();
+	void FileWrite(string filePath);
 };
 
