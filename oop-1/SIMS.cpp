@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <iomanip>
 #include <conio.h>
+#include <algorithm>
+#include <sstream>
 #include "SIMS.h"
 using namespace std;
 
@@ -13,9 +15,16 @@ SIMS::SIMS() {
 
 	if (fin.fail()) { // have to create file1.txt 
 		cout << "file doesn't exist" << endl;
+		ofstream fout("file1.txt");
 	}
-	else { // use file1.txt already existed
+	else if (fin.is_open()) { // use file1.txt already existed
 		cout << "file exists !" << endl;
+
+		string line;
+		while (getline(fin, line)) { // 
+			vector<string> tempStudent = split(line, ',');
+			studentList.push_back(Student(tempStudent[0], tempStudent[1], tempStudent[2], tempStudent[3], tempStudent[4]));
+		}
 	}
 
 	// Initiating window
@@ -42,6 +51,8 @@ void SIMS::ShowMainMenu() {
 		SearchStudent();
 		break;
 	case 3:
+		SortStudent();
+		break;
 	case 4:
 		Exit();
 		break;
@@ -51,6 +62,8 @@ void SIMS::ShowMainMenu() {
 }
 
 void SIMS::InsertStudent() {
+	int flag = 0;
+
 	system("cls");
 
 	string name;
@@ -76,9 +89,20 @@ void SIMS::InsertStudent() {
 	cout << "Tel ? ";
 	getline(cin, tel);
 
-	studentList.push_back(Student(name, sID, bYear, dept, tel));
+	// checking for already existed sID
+	for (int i = 0; i < studentList.size(); i++) {
+		if (studentList[i].GetSID() == sID)
+			flag = 1;
+	}
 
-	cout << "adding new student..." << endl;
+	if (flag == 1) {
+		cout << "Error: Already inserted" << endl;
+	}
+	else {
+		studentList.push_back(Student(name, sID, bYear, dept, tel));
+		cout << "adding new student..." << endl;
+		FileWrite();
+	}
 
 	Sleep(700);
 	system("cls");
@@ -128,10 +152,11 @@ void SIMS::SearchStudent() {
 	}
 }
 void SIMS::PrintSearchFormat() {
+	cout.setf(ios::left);
 	cout << endl;
 	cout << setw(15) <<"Name";
 	cout << setw(15) << "StudentID";
-	cout << setw(15) << "Dept";
+	cout << setw(25) << "Dept";
 	cout << setw(15) << "Birth Year";
 	cout << setw(15) << "Tel" << endl;
 }
@@ -142,7 +167,7 @@ void SIMS::SearchByName(string keyword) {
 		if (studentList[i].GetName() == keyword) {
 			cout << setw(15) << studentList[i].GetName();
 			cout << setw(15) << studentList[i].GetSID();
-			cout << setw(15) << studentList[i].GetDept();
+			cout << setw(25) << studentList[i].GetDept();
 			cout << setw(15) << studentList[i].GetBYear();
 			cout << setw(15) << studentList[i].GetTel() << endl;
 		}
@@ -159,7 +184,7 @@ void SIMS::SearchBySID(string keyword) {
 		if (studentList[i].GetSID() == keyword) {
 			cout << setw(15) << studentList[i].GetName();
 			cout << setw(15) << studentList[i].GetSID();
-			cout << setw(15) << studentList[i].GetDept();
+			cout << setw(25) << studentList[i].GetDept();
 			cout << setw(15) << studentList[i].GetBYear();
 			cout << setw(15) << studentList[i].GetTel() << endl;
 		}
@@ -176,7 +201,7 @@ void SIMS::SearchByAdYear(string keyword) {
 		if (studentList[i].GetSID().substr(0,4) == keyword) {
 			cout << setw(15) << studentList[i].GetName();
 			cout << setw(15) << studentList[i].GetSID();
-			cout << setw(15) << studentList[i].GetDept();
+			cout << setw(25) << studentList[i].GetDept();
 			cout << setw(15) << studentList[i].GetBYear();
 			cout << setw(15) << studentList[i].GetTel() << endl;
 		}
@@ -193,7 +218,7 @@ void SIMS::SearchByDept(string keyword) {
 		if (studentList[i].GetDept() == keyword) {
 			cout << setw(15) << studentList[i].GetName();
 			cout << setw(15) << studentList[i].GetSID();
-			cout << setw(15) << studentList[i].GetDept();
+			cout << setw(25) << studentList[i].GetDept();
 			cout << setw(15) << studentList[i].GetBYear();
 			cout << setw(15) << studentList[i].GetTel() << endl;
 		}
@@ -207,9 +232,10 @@ void SIMS::SearchByDept(string keyword) {
 void SIMS::ShowAll() {
 	PrintSearchFormat();
 	for (int i = 0; i < studentList.size(); i++) {
+		cout.setf(ios::left);
 		cout << setw(15) << studentList[i].GetName();
 		cout << setw(15) << studentList[i].GetSID();
-		cout << setw(15) << studentList[i].GetDept();
+		cout << setw(25) << studentList[i].GetDept();
 		cout << setw(15) << studentList[i].GetBYear();
 		cout << setw(15) << studentList[i].GetTel() << endl;
 	}
@@ -229,8 +255,141 @@ void SIMS::SortStudent() {
 	cout << "4. Sort by Department name" << endl;
 	cout << "> ";
 	cin >> input;
+
+	switch (input) {
+	case 1:
+		SortByName();
+		break;
+	case 2:
+		SortBySID();
+		break;
+	case 3:
+		SortByAdYear();
+		break;
+	case 4:
+		SortByDept();
+		break;
+	default:
+		cin >> input;
+		break;
+	}
+
+}
+
+void SIMS::SortByName() {
+	vector<pair <string, string>> tempList; // SID, keyword
+	vector<Student> sortedList;
+
+	for (int i = 0; i < studentList.size(); i++)
+		tempList.push_back(pair <string, string>(studentList[i].GetSID(), studentList[i].GetName()));
+	sort(tempList.begin(), tempList.end());
+	for (int i = 0; i < tempList.size(); i++) {
+		for (int j = 0; j < studentList.size(); j++) {
+			if (tempList[i].first == studentList[j].GetSID()) {
+				sortedList.push_back(studentList[j]);
+			}
+		}
+	}
+
+	studentList = sortedList;
+	cout << endl << "Press any key for next step ";
+	FileWrite();
+	_getch();
+	system("cls");
+	ShowMainMenu();
+}
+void SIMS::SortBySID() {
+	vector<string> tempList; // SID
+	vector<Student> sortedList;
+
+	for (int i = 0; i < studentList.size(); i++)
+		tempList.push_back(studentList[i].GetSID());
+	sort(tempList.begin(), tempList.end());
+	for (int i = 0; i < tempList.size(); i++) {
+		for (int j = 0; j < studentList.size(); j++) {
+			if (tempList[i] == studentList[j].GetSID()) {
+				sortedList.push_back(studentList[j]);
+			}
+		}
+	}
+
+	studentList = sortedList;
+	cout << endl << "Press any key for next step ";
+	FileWrite();
+	_getch();
+	system("cls");
+	ShowMainMenu();
+}
+void SIMS::SortByAdYear() {
+	vector<pair <string, string>> tempList; // SID, keyword
+	vector<Student> sortedList;
+
+	for (int i = 0; i < studentList.size(); i++)
+		tempList.push_back(pair <string, string>(studentList[i].GetSID(), studentList[i].GetBYear()));
+	sort(tempList.begin(), tempList.end());
+	for (int i = 0; i < tempList.size(); i++) {
+		for (int j = 0; j < studentList.size(); j++) {
+			if (tempList[i].first == studentList[j].GetBYear()) {
+				sortedList.push_back(studentList[j]);
+			}
+		}
+	}
+
+	studentList = sortedList;
+	cout << endl << "Press any key for next step ";
+	FileWrite();
+	_getch();
+	system("cls");
+	ShowMainMenu();
+}
+void SIMS::SortByDept() {
+	vector<pair <string, string>> tempList; // SID, keyword
+	vector<Student> sortedList;
+
+	for (int i = 0; i < studentList.size(); i++)
+		tempList.push_back(pair <string, string>(studentList[i].GetSID(), studentList[i].GetDept()));
+	sort(tempList.begin(), tempList.end());
+	for (int i = 0; i < tempList.size(); i++) {
+		for (int j = 0; j < studentList.size(); j++) {
+			if (tempList[i].first == studentList[j].GetDept()) {
+				sortedList.push_back(studentList[j]);
+			}
+		}
+	}
+
+	studentList = sortedList;
+	cout << endl << "Press any key for next step ";
+	FileWrite();
+	_getch();
+	system("cls");
+	ShowMainMenu();
 }
 
 void SIMS::Exit() {
 	exit(1);
+}
+
+vector<string> SIMS::split(string str, char Delimiter) {
+	istringstream iss(str);             // istringstream에 str을 담는다.
+	string buffer;                      // 구분자를 기준으로 절삭된 문자열이 담겨지는 버퍼
+
+	vector<string> result;
+
+	// istringstream은 istream을 상속받으므로 getline을 사용할 수 있다.
+	while (getline(iss, buffer, Delimiter)) {
+		result.push_back(buffer);               // 절삭된 문자열을 vector에 저장
+	}
+
+	return result;
+}
+
+void SIMS::FileWrite() {
+	ofstream fout("file1.txt");
+	for (int i = 0; i < studentList.size(); i++) {
+		fout << studentList[i].GetName() << ',';
+		fout << studentList[i].GetSID() << ',';
+		fout << studentList[i].GetBYear() << ',';
+		fout << studentList[i].GetDept() << ',';
+		fout << studentList[i].GetTel() << endl;
+	}
 }

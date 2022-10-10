@@ -13,6 +13,8 @@ private:
 public:
 	SIMS();
 
+	vector<string> split(string str, char Delimiter);
+
 	void ShowMainMenu();
 
 	void InsertStudent();
@@ -26,7 +28,13 @@ public:
 	void ShowAll();
 
 	void SortStudent();
+	void SortByName();
+	void SortBySID();
+	void SortByAdYear();
+	void SortByDept();
 
 	void Exit();
+
+	void FileWrite();
 };
 
