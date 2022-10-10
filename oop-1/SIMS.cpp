@@ -110,20 +110,21 @@ void SIMS::InsertStudent() {
 	if (name.length() > 15 || sID.length() != 10 || bYear.length() != 4 || tel.length() > 12) {
 		cout << "Length Error" << endl;
 	}
-
-	// checking for already existed sID
-	for (int i = 0; i < studentList.size(); i++) {
-		if (studentList[i].GetSID() == sID)
-			flag = 1;
-	}
-
-	if (flag == 1) {
-		cout << "Error: Already inserted" << endl;
-	}
 	else {
-		studentList.push_back(Student(name, sID, bYear, dept, tel));
-		cout << "adding new student..." << endl;
-		FileWrite(filePath);
+		// checking for already existed sID
+		for (int i = 0; i < studentList.size(); i++) {
+			if (studentList[i].GetSID() == sID)
+				flag = 1;
+		}
+
+		if (flag == 1) {
+			cout << "Error: Already inserted" << endl;
+		}
+		else {
+			studentList.push_back(Student(name, sID, bYear, dept, tel));
+			cout << "adding new student..." << endl;
+			FileWrite(filePath);
+		}
 	}
 
 	Sleep(700);
