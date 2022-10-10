@@ -2,16 +2,18 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <string>
 #include "Student.h"
 using namespace std;
 
 class SIMS {
 private:
+	string filePath;
 	int input; // variable that contain every input
 	vector<Student> studentList; // vector that contain Student obj
 
 public:
-	SIMS();
+	SIMS(string filePath);
 
 	vector<string> split(string str, char Delimiter);
 

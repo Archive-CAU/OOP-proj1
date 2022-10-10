@@ -9,16 +9,16 @@
 #include "SIMS.h"
 using namespace std;
 
-SIMS::SIMS() {
+SIMS::SIMS(string filePath) {
 	// file processing
-	ifstream fin("file1.txt");
+	ifstream fin(filePath);
 
 	if (fin.fail()) { // have to create file1.txt 
-		cout << "file doesn't exist" << endl;
-		ofstream fout("file1.txt");
+		//cout << "file doesn't exist" << endl;
+		ofstream fout(filePath);
 	}
 	else if (fin.is_open()) { // use file1.txt already existed
-		cout << "file exists !" << endl;
+		//cout << "file exists !" << endl;
 
 		string line;
 		while (getline(fin, line)) { // 
@@ -34,7 +34,7 @@ SIMS::SIMS() {
 }
 
 void SIMS::ShowMainMenu() {
-	cout << studentList.size() << endl;
+	// cout << studentList.size() << endl; // show numer of student
 	// Initiating window
 	cout << "1. Insertion" << endl;
 	cout << "2. Search" << endl;
@@ -384,7 +384,7 @@ vector<string> SIMS::split(string str, char Delimiter) {
 }
 
 void SIMS::FileWrite() {
-	ofstream fout("file1.txt");
+	ofstream fout(filePath);
 	for (int i = 0; i < studentList.size(); i++) {
 		fout << studentList[i].GetName() << ',';
 		fout << studentList[i].GetSID() << ',';
