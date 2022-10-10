@@ -20,12 +20,28 @@ SIMS::SIMS(string filePath) {
 	}
 	else if (fin.is_open()) { // use file1.txt already existed
 		//cout << "file exists !" << endl;
-
 		string line;
 		while (getline(fin, line)) { // 
 			vector<string> tempStudent = split(line, ',');
 			studentList.push_back(Student(tempStudent[0], tempStudent[1], tempStudent[2], tempStudent[3], tempStudent[4]));
 		}
+
+		vector<pair <string, string>> tempList; // SID, keyword
+		vector<Student> sortedList;
+
+		for (int i = 0; i < studentList.size(); i++)
+			tempList.push_back(pair <string, string>(studentList[i].GetName(), studentList[i].GetSID()));
+
+		sort(tempList.begin(), tempList.end());
+		for (int i = 0; i < tempList.size(); i++) {
+			for (int j = 0; j < studentList.size(); j++) {
+				if (tempList[i].second == studentList[j].GetSID()) {
+					sortedList.push_back(studentList[j]);
+				}
+			}
+		}
+
+		studentList = sortedList;
 	}
 
 	// Initiating window
@@ -89,6 +105,11 @@ void SIMS::InsertStudent() {
 
 	cout << "Tel ? ";
 	getline(cin, tel);
+
+	// length check
+	if (name.length() > 15 || sID.length() != 10 || bYear.length() != 4 || tel.length() > 12) {
+		cout << "Length Error" << endl;
+	}
 
 	// checking for already existed sID
 	for (int i = 0; i < studentList.size(); i++) {
@@ -283,6 +304,7 @@ void SIMS::SortByName() {
 
 	for (int i = 0; i < studentList.size(); i++)
 		tempList.push_back(pair <string, string>(studentList[i].GetName(), studentList[i].GetSID()));
+
 	sort(tempList.begin(), tempList.end());
 	for (int i = 0; i < tempList.size(); i++) {
 		for (int j = 0; j < studentList.size(); j++) {
@@ -305,6 +327,7 @@ void SIMS::SortBySID() {
 
 	for (int i = 0; i < studentList.size(); i++)
 		tempList.push_back(studentList[i].GetSID());
+
 	sort(tempList.begin(), tempList.end());
 	for (int i = 0; i < tempList.size(); i++) {
 		for (int j = 0; j < studentList.size(); j++) {
@@ -326,11 +349,12 @@ void SIMS::SortByAdYear() {
 	vector<Student> sortedList;
 
 	for (int i = 0; i < studentList.size(); i++)
-		tempList.push_back(pair <string, string>(studentList[i].GetBYear(), studentList[i].GetSID()));
+		tempList.push_back(pair <string, string>(studentList[i].GetBYear().substr(0, 4), studentList[i].GetSID()));
+
 	sort(tempList.begin(), tempList.end());
 	for (int i = 0; i < tempList.size(); i++) {
 		for (int j = 0; j < studentList.size(); j++) {
-			if (tempList[i].second == studentList[j].GetBYear()) {
+			if (tempList[i].second == studentList[j].GetSID()) {
 				sortedList.push_back(studentList[j]);
 			}
 		}
@@ -349,10 +373,11 @@ void SIMS::SortByDept() {
 
 	for (int i = 0; i < studentList.size(); i++)
 		tempList.push_back(pair <string, string>(studentList[i].GetDept(), studentList[i].GetSID()));
+
 	sort(tempList.begin(), tempList.end());
 	for (int i = 0; i < tempList.size(); i++) {
 		for (int j = 0; j < studentList.size(); j++) {
-			if (tempList[i].second == studentList[j].GetDept()) {
+			if (tempList[i].second == studentList[j].GetSID()) {
 				sortedList.push_back(studentList[j]);
 			}
 		}
@@ -368,6 +393,7 @@ void SIMS::SortByDept() {
 
 void SIMS::Exit() {
 	exit(1);
+	FileWrite(filePath);
 }
 
 vector<string> SIMS::split(string str, char Delimiter) {
